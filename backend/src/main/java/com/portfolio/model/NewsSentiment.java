@@ -17,9 +17,9 @@ public class NewsSentiment {
     
     @Column(columnDefinition = "TEXT")
     private String summary;
-
+    // Timestamp for the last update
     private LocalDateTime lastUpdated = LocalDateTime.now();
-    
+    // Update the timestamp before updating the entity
     @PreUpdate
     public void preUpdate() {
         lastUpdated = LocalDateTime.now();

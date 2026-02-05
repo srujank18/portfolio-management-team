@@ -17,11 +17,12 @@ public class Asset {
     private BigDecimal quantity;
     private BigDecimal purchasePrice;
 
-    @ManyToOne
-    @JoinColumn(name = "portfolio_id")
-    private Portfolio portfolio;
+
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+    @ManyToOne
+    @JoinColumn(name = "portfolio_id")
+    private Portfolio portfolio;
 }
