@@ -199,7 +199,7 @@ public class AiService {
         HttpEntity<Object> entity = new HttpEntity<>(body, headers);
         return restTemplate.postForEntity(URI.create(targetUrl), entity, Map.class);
     }
-
+    // Helper method to URL-encode a string
     private String encode(String s) {
         try {
             return java.net.URLEncoder.encode(s, StandardCharsets.UTF_8.name());
