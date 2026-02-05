@@ -194,7 +194,7 @@ public class AiService {
             return new AiResponse("Error calling AI provider: " + ex.getMessage());
         }
     }
-
+    // Helper method to perform POST request
     private ResponseEntity<Map> doPost(String targetUrl, Object body, HttpHeaders headers) {
         HttpEntity<Object> entity = new HttpEntity<>(body, headers);
         return restTemplate.postForEntity(URI.create(targetUrl), entity, Map.class);
