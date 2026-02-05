@@ -1,0 +1,19 @@
+package com.example.chatbotfeature.controller;
+
+public class ChatRequest {
+    private String message;
+
+    // Constructor
+    public ChatRequest(String message) {
+        this.message = message;
+    }
+
+    // Getter and Setter
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+}
