@@ -14,7 +14,7 @@ public class NewsSentiment {
 
     private String ticker;
     private BigDecimal sentimentScore;
-    
+    // Summary of the news article
     @Column(columnDefinition = "TEXT")
     private String summary;
     // Timestamp for the last update
