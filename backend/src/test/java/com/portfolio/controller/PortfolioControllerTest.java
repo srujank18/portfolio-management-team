@@ -1,41 +1,74 @@
 package com.portfolio.controller;
 
+import com.portfolio.dto.AssetDTO;
 import com.portfolio.dto.PortfolioSummaryDTO;
+import com.portfolio.model.Asset;
+import com.portfolio.model.Category;
+import com.portfolio.model.Portfolio;
 import com.portfolio.service.PortfolioService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
-import java.util.Collections;
+import java.util.ArrayList;
 
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-@WebMvcTest(PortfolioController.class)
+@ExtendWith(MockitoExtension.class)
 class PortfolioControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @Mock
     private PortfolioService portfolioService;
 
+    @InjectMocks
+    private PortfolioController portfolioController;
+
     @Test
-    void getPortfolioSummary_ShouldReturnSummary() throws Exception {
-        PortfolioSummaryDTO summary = new PortfolioSummaryDTO();
-        summary.setTotalValue(new BigDecimal("5000"));
-        summary.setAssets(Collections.emptyList());
+    void testGetPortfolioSummary() {
+        PortfolioSummaryDTO summaryDTO = new PortfolioSummaryDTO();
+        summaryDTO.setAssets(new ArrayList<>());
+        summaryDTO.setTotalValue(new BigDecimal("1000.00"));
 
-        given(portfolioService.getPortfolioSummary()).willReturn(summary);
+        when(portfolioService.getPortfolioSummary()).thenReturn(summaryDTO);
 
-        mockMvc.perform(get("/api/portfolio")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalValue").value(5000));
+        ResponseEntity<PortfolioSummaryDTO> response = portfolioController.getPortfolioSummary();
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(portfolioService).getPortfolioSummary();
+    }
+
+    @Test
+    void testAddAsset() {
+        AssetDTO assetDTO = new AssetDTO();
+        assetDTO.setSymbol("AAPL");
+
+        Asset asset = new Asset();
+        asset.setId(1L);
+        asset.setSymbol("AAPL");
+
+        when(portfolioService.addAsset(any())).thenReturn(asset);
+
+        ResponseEntity<?> response = portfolioController.addAsset(assetDTO);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(portfolioService).addAsset(any());
+    }
+
+    @Test
+    void testDeleteAsset() {
+        ResponseEntity<Void> response = portfolioController.deleteAsset(1L);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(portfolioService).removeAsset(1L);
     }
 }

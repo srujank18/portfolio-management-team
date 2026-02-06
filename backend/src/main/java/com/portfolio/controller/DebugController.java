@@ -22,21 +22,25 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class DebugController {
+
     private final AssetRepository assetRepository;
     private final JdbcTemplate jdbcTemplate;
     private final CategoryRepository categoryRepository;
     private final PortfolioRepository portfolioRepository;
 
+    // Get all assets
     @GetMapping("/assets")
     public ResponseEntity<List<Asset>> getAllAssets() {
         return ResponseEntity.ok(assetRepository.findAll());
     }
 
+    // Get assets by portfolio ID
     @GetMapping("/assets/portfolio/{id}")
     public ResponseEntity<List<Asset>> getAssetsByPortfolio(@PathVariable Long id) {
         return ResponseEntity.ok(assetRepository.findByPortfolio_Id(id));
     }
 
+    // Get table counts (portfolio, category, asset, news_sentiment)
     @GetMapping("/counts")
     public ResponseEntity<Map<String, Object>> getTableCounts() {
         Map<String, Object> counts = new HashMap<>();
@@ -47,6 +51,7 @@ public class DebugController {
         return ResponseEntity.ok(counts);
     }
 
+    // Seed the database with some data if not already present
     @PostMapping("/seed")
     public ResponseEntity<Map<String, Object>> seedDatabase() {
         // Create or get portfolio id=1
@@ -57,6 +62,7 @@ public class DebugController {
             return portfolioRepository.save(p);
         });
 
+        // Create or get categories
         Category stocks = Optional.ofNullable(categoryRepository.findByName("Stocks")).orElseGet(() -> {
             Category c = new Category(); c.setName("Stocks"); return categoryRepository.save(c);
         });
@@ -74,10 +80,23 @@ public class DebugController {
             a3.setSymbol("TLT"); a3.setName("iShares 20+ Year Treasury Bond ETF"); a3.setQuantity(BigDecimal.valueOf(20)); a3.setPurchasePrice(BigDecimal.valueOf(130)); a3.setPortfolio(portfolio); a3.setCategory(bonds); assetRepository.save(a3);
         }
 
+        // Return the counts after seeding
         Map<String, Object> result = new HashMap<>();
         result.put("portfolioCount", jdbcTemplate.queryForObject("SELECT COUNT(*) FROM portfolio", Integer.class));
         result.put("categoryCount", jdbcTemplate.queryForObject("SELECT COUNT(*) FROM category", Integer.class));
         result.put("assetCount", jdbcTemplate.queryForObject("SELECT COUNT(*) FROM asset", Integer.class));
         return ResponseEntity.ok(result);
+    }
+
+    // Get all categories
+    @GetMapping("/categories")
+    public ResponseEntity<List<Category>> getAllCategories() {
+        return ResponseEntity.ok(categoryRepository.findAll());
+    }
+
+    // Get all portfolios
+    @GetMapping("/portfolios")
+    public ResponseEntity<List<Portfolio>> getAllPortfolios() {
+        return ResponseEntity.ok(portfolioRepository.findAll());
     }
 }
